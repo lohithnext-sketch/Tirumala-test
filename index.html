@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sri Vari Darshan Entry</title>
+    <title>Sri Vari Darshan</title>
     <style>
+        /* --- 1. VISUAL STYLES (FROM YOUR PREVIOUS CODE) --- */
         :root { --bg-color: #050202; --gold: #ffd700; }
         
         body {
@@ -20,39 +21,18 @@
             flex-direction: column;
         }
 
-        /* --- LOGIN SCREEN --- */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 999;
-            transition: opacity 1s ease;
-        }
-        input {
-            padding: 12px; margin: 15px; width: 200px;
-            background: #111; border: 2px solid #8b4513; color: gold;
-            text-align: center; font-size: 1.1rem; border-radius: 5px;
-            text-transform: lowercase; /* Forces lowercase for easy checking */
-        }
-        .enter-btn {
-            background: linear-gradient(#b8860b, #5c3010);
-            color: white; border: none; padding: 12px 30px;
-            font-size: 1rem; font-weight: bold; cursor: pointer;
-            border-radius: 5px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-        }
-
-        /* --- TEMPLE SCREEN (Hidden Initially) --- */
-        #temple-container {
-            display: none; /* Hidden until unlocked */
+        .main-container { 
+            text-align: center; 
+            width: 100%; 
+            display: none; /* Hidden initially for Login System */
             opacity: 0;
             transition: opacity 2s ease;
-            width: 100%; text-align: center;
         }
 
         .header-text { margin: 5px 0; color: #daa520; text-shadow: 0 4px 15px black; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; }
         #status-text { color: #888; margin-bottom: 10px; font-size: 0.9rem; font-style: italic; }
 
-        /* 3D FRAME */
+        /* 3D FRAME (Previous Style) */
         #temple-frame {
             position: relative;
             width: 350px; 
@@ -68,7 +48,7 @@
 
         #corridor-rig { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
 
-        /* IDOL STYLING - BIG & MAJESTIC */
+        /* IDOL STYLING (Previous Scale 3.2) */
         #idol-sanctum {
             position: absolute; width: 100%; height: 100%;
             transform: translateZ(-1600px) scale(3.2); 
@@ -81,7 +61,7 @@
             filter: contrast(1.15) saturate(1.2) drop-shadow(0 0 40px rgba(255, 200, 0, 0.6));
         }
 
-        /* GATES */
+        /* GATE LAYOUT */
         .gate-layer { position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; display: flex; pointer-events: none; top: 0; left: 0; }
         .door {
             width: 50%; height: 100%;
@@ -94,7 +74,22 @@
         .open-left { transform: rotateY(105deg); }
         .open-right { transform: rotateY(-105deg); }
 
-        /* TEXTURES */
+        /* ANCIENT HANDLES */
+        .door::before {
+            content: ''; position: absolute; top: 45%; width: 42px; height: 42px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #8b4513, #3e1b05, #000);
+            border: 2px solid #1a0500; box-shadow: 2px 5px 10px rgba(0,0,0,0.9); z-index: 5;
+        }
+        .door::after {
+            content: ''; position: absolute; top: 48%; width: 48px; height: 48px; border-radius: 50%;
+            border: 7px solid #4a2510; background: transparent;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 2px 4px 5px rgba(0,0,0,0.8);
+            z-index: 6; filter: brightness(0.8);
+        }
+        .door.left::before { right: 25px; } .door.right::before { left: 25px; }
+        .door.left::after { right: 22px; } .door.right::after { left: 22px; }
+
+        /* TEXTURES (EXACTLY FROM PREVIOUS CODE) */
         .gate-1 .door { background-color: #1a0f05; background-image: radial-gradient(circle, #5c3a1e 3px, transparent 4px), url('https://www.transparenttextures.com/patterns/wood-pattern.png'); background-size: 50px 50px, auto; background-blend-mode: overlay; border: 10px solid #0d0500; }
         .gate-2 .door { background-color: #555; background-image: radial-gradient(circle at center, transparent 40%, #222 90%), repeating-radial-gradient(circle, #888, #888 2px, #444 4px, #444 10px); background-blend-mode: hard-light; border: 6px ridge #777; filter: contrast(1.3) grayscale(0.6); }
         .gate-3 .door { background: linear-gradient(to bottom, #4b2e18, #2a1505); background-image: url('https://www.transparenttextures.com/patterns/cracked-concrete.png'); background-blend-mode: multiply; border: 5px solid #3e1b05; box-shadow: inset 0 0 60px #1a0a00; }
@@ -109,6 +104,27 @@
         button:disabled { background: #111; color: #444; border-color: #222; }
         .flower { position: absolute; z-index: 100; pointer-events: none; animation: fall 4s linear forwards; font-size: 24px; opacity: 0.8; }
         @keyframes fall { to { transform: translateY(500px) rotate(360deg); opacity: 0; } }
+
+        /* --- 2. LOGIN STYLES (ADDED) --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 999;
+            transition: opacity 1s ease;
+        }
+        input {
+            padding: 12px; margin: 15px; width: 200px;
+            background: #111; border: 2px solid #8b4513; color: gold;
+            text-align: center; font-size: 1.1rem; border-radius: 5px;
+            text-transform: lowercase;
+        }
+        .enter-btn {
+            background: linear-gradient(#b8860b, #5c3010);
+            color: white; border: none; padding: 12px 30px;
+            font-size: 1rem; font-weight: bold; cursor: pointer;
+            border-radius: 5px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -134,7 +150,7 @@
                 <div id="gates-wrapper"></div>
                 <div id="idol-sanctum">
                     <img id="idol" 
-                         src="idol.png" 
+                         src="./idol.jpg" 
                          onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/8/82/Sri_Venkateswara_Swamy_Vari_Temple_Tirumala.jpg';"
                          alt="Lord Venkateswara">
                 </div>
@@ -157,17 +173,18 @@
             const mantraAudio = document.getElementById('mantra');
             
             if (validUsers.includes(input)) {
-                // Success!
+                // Success! Fade out login
                 document.getElementById('login-screen').style.opacity = '0';
                 setTimeout(() => { document.getElementById('login-screen').style.display = 'none'; }, 1000);
                 
                 // Show Temple
                 const temple = document.getElementById('temple-container');
                 temple.style.display = 'block';
+                // Small delay to allow display:block to apply before opacity transition
                 setTimeout(() => { temple.style.opacity = '1'; }, 100);
 
-                // 🎵 START MANTRA IMMEDIATELY UPON ACCESS
-                try { mantraAudio.play(); } catch(e) { console.log("Audio waiting for click"); }
+                // 🎵 START MANTRA IMMEDIATELY
+                try { mantraAudio.play(); } catch(e) { console.log("Audio waiting for interaction"); }
             } else {
                 // Fail
                 const error = document.getElementById('error-msg');
@@ -202,7 +219,7 @@
             const bells = document.getElementById('bells');
             const song = document.getElementById('song');
 
-            // 🎵 START BELLS (Mantra continues playing in background)
+            // 🎵 START BELLS (Mantra continues playing)
             try { bells.play(); } catch(e){}
 
             // Open Gates Loop
@@ -214,8 +231,6 @@
             }
 
             // --- 🛑 DARSHAN MOMENT (STOP NOISE, START SONG) ---
-            
-            // Fade out Mantra & Bells smoothly (optional logic simplified here)
             mantra.pause();
             bells.pause();
             
