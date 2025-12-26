@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sri Vari Saptha Dwaram</title>
+    <title>Sri Vari Darshan Entry</title>
     <style>
-        :root { --bg-color: #050202; }
+        :root { --bg-color: #050202; --gold: #ffd700; }
         
         body {
             background-color: var(--bg-color);
-            color: #ffd700;
+            color: var(--gold);
             font-family: 'Times New Roman', serif;
             margin: 0;
             height: 100vh;
@@ -17,9 +17,38 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            flex-direction: column;
         }
 
-        .main-container { text-align: center; width: 100%; }
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 999;
+            transition: opacity 1s ease;
+        }
+        input {
+            padding: 12px; margin: 15px; width: 200px;
+            background: #111; border: 2px solid #8b4513; color: gold;
+            text-align: center; font-size: 1.1rem; border-radius: 5px;
+            text-transform: lowercase; /* Forces lowercase for easy checking */
+        }
+        .enter-btn {
+            background: linear-gradient(#b8860b, #5c3010);
+            color: white; border: none; padding: 12px 30px;
+            font-size: 1rem; font-weight: bold; cursor: pointer;
+            border-radius: 5px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        /* --- TEMPLE SCREEN (Hidden Initially) --- */
+        #temple-container {
+            display: none; /* Hidden until unlocked */
+            opacity: 0;
+            transition: opacity 2s ease;
+            width: 100%; text-align: center;
+        }
+
         .header-text { margin: 5px 0; color: #daa520; text-shadow: 0 4px 15px black; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; }
         #status-text { color: #888; margin-bottom: 10px; font-size: 0.9rem; font-style: italic; }
 
@@ -39,21 +68,20 @@
 
         #corridor-rig { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
 
-        /* --- IDOL STYLING --- */
+        /* IDOL STYLING - BIG & MAJESTIC */
         #idol-sanctum {
             position: absolute; width: 100%; height: 100%;
-            transform: translateZ(-1600px) scale(3.2); /* Huge Scale */
+            transform: translateZ(-1600px) scale(3.2); 
             display: flex; justify-content: center; align-items: center;
             z-index: 1; background: #000;
         }
-
         #idol {
             width: 100%; height: 100%;
             object-fit: cover; object-position: top center;
             filter: contrast(1.15) saturate(1.2) drop-shadow(0 0 40px rgba(255, 200, 0, 0.6));
         }
 
-        /* GATE LAYOUT */
+        /* GATES */
         .gate-layer { position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; display: flex; pointer-events: none; top: 0; left: 0; }
         .door {
             width: 50%; height: 100%;
@@ -65,21 +93,6 @@
         .door.right { transform-origin: right; border-left: 2px solid rgba(0,0,0,0.8); }
         .open-left { transform: rotateY(105deg); }
         .open-right { transform: rotateY(-105deg); }
-
-        /* ANCIENT HANDLES */
-        .door::before {
-            content: ''; position: absolute; top: 45%; width: 42px; height: 42px; border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #8b4513, #3e1b05, #000);
-            border: 2px solid #1a0500; box-shadow: 2px 5px 10px rgba(0,0,0,0.9); z-index: 5;
-        }
-        .door::after {
-            content: ''; position: absolute; top: 48%; width: 48px; height: 48px; border-radius: 50%;
-            border: 7px solid #4a2510; background: transparent;
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 2px 4px 5px rgba(0,0,0,0.8);
-            z-index: 6; filter: brightness(0.8);
-        }
-        .door.left::before { right: 25px; } .door.right::before { left: 25px; }
-        .door.left::after { right: 22px; } .door.right::after { left: 22px; }
 
         /* TEXTURES */
         .gate-1 .door { background-color: #1a0f05; background-image: radial-gradient(circle, #5c3a1e 3px, transparent 4px), url('https://www.transparenttextures.com/patterns/wood-pattern.png'); background-size: 50px 50px, auto; background-blend-mode: overlay; border: 10px solid #0d0500; }
@@ -99,24 +112,29 @@
     </style>
 </head>
 <body>
-    <div class="main-container">
+
+    <div id="login-screen">
+        <h2 style="color: #daa520; text-transform: uppercase;">Sri Vari Dwaram Entry</h2>
+        <p style="color: #888;">Only Devotees Allowed</p>
+        <input type="text" id="username" placeholder="Enter Your Name">
+        <button class="enter-btn" onclick="checkAccess()">UNLOCK DARSHAN</button>
+        <p id="error-msg" style="color: red; display: none;">Access Denied</p>
+    </div>
+
+    <audio id="mantra" loop><source src="mantra.mp3" type="audio/mpeg"></audio>
+    <audio id="bells" loop><source src="bells.mp3" type="audio/mpeg"></audio>
+    <audio id="song"><source src="song.mp3" type="audio/mpeg"></audio>
+
+    <div class="main-container" id="temple-container">
         <h1 class="header-text">Sri Vari Saptha Dwaram</h1>
         <p id="status-text">Govinda! Govinda! Govinda!</p>
-
-        <audio id="bellsAudio" loop>
-            <source src="bells.mp3" type="audio/mpeg">
-        </audio>
-
-        <audio id="songAudio">
-            <source src="song.mp3" type="audio/mpeg">
-        </audio>
 
         <div id="temple-frame">
             <div id="corridor-rig">
                 <div id="gates-wrapper"></div>
                 <div id="idol-sanctum">
                     <img id="idol" 
-                         src="idol.png" 
+                         src="./idol.jpg" 
                          onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/8/82/Sri_Venkateswara_Swamy_Vari_Temple_Tirumala.jpg';"
                          alt="Lord Venkateswara">
                 </div>
@@ -124,17 +142,46 @@
         </div>
 
         <div class="controls">
-            <button id="startBtn" onclick="startJourney()">🕉️ OPEN GATES</button>
+            <button id="startBtn" onclick="openGates()">🕉️ OPEN GATES</button>
             <button id="flowerBtn" onclick="showerFlowers()" disabled>🌸 Pushpa Vrishti</button>
             <button id="haratiBtn" onclick="giveHarati()" disabled>🕯️ Harati</button>
         </div>
     </div>
 
     <script>
+        // --- 🔐 LOGIN LOGIC ---
+        const validUsers = ["lohith", "abhi", "vijayalakshmi", "virupakshi"];
+        
+        function checkAccess() {
+            const input = document.getElementById('username').value.trim().toLowerCase();
+            const mantraAudio = document.getElementById('mantra');
+            
+            if (validUsers.includes(input)) {
+                // Success!
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => { document.getElementById('login-screen').style.display = 'none'; }, 1000);
+                
+                // Show Temple
+                const temple = document.getElementById('temple-container');
+                temple.style.display = 'block';
+                setTimeout(() => { temple.style.opacity = '1'; }, 100);
+
+                // 🎵 START MANTRA IMMEDIATELY UPON ACCESS
+                try { mantraAudio.play(); } catch(e) { console.log("Audio waiting for click"); }
+            } else {
+                // Fail
+                const error = document.getElementById('error-msg');
+                error.style.display = 'block';
+                error.innerText = "Name not in Guest List";
+            }
+        }
+
+        // --- 🕉️ TEMPLE LOGIC ---
         const wrapper = document.getElementById('gates-wrapper');
         const totalGates = 7;
         const gateSpacing = 200; 
 
+        // Build Gates
         for (let i = 1; i <= totalGates; i++) {
             const layer = document.createElement('div');
             layer.className = `gate-layer gate-${i}`;
@@ -146,16 +193,19 @@
 
         const gateNames = ["Maha Dwaram", "Vendi Vakili", "Dwajasthambha", "Nadava", "Kulasekhara Padi", "Jaya-Vijaya", "Bangaru Vakili"];
 
-        async function startJourney() {
-            // 🔔 START BELLS
-            const bells = document.getElementById('bellsAudio');
-            const song = document.getElementById('songAudio');
-            try { bells.play(); } catch(e) { console.log("Audio Blocked"); }
-
+        async function openGates() {
             document.getElementById('startBtn').disabled = true;
             const status = document.getElementById('status-text');
             const layers = document.querySelectorAll('.gate-layer');
+            
+            const mantra = document.getElementById('mantra');
+            const bells = document.getElementById('bells');
+            const song = document.getElementById('song');
 
+            // 🎵 START BELLS (Mantra continues playing in background)
+            try { bells.play(); } catch(e){}
+
+            // Open Gates Loop
             for (let i = 0; i < totalGates; i++) {
                 status.innerText = `Opening: ${gateNames[i]}...`;
                 layers[i].querySelector('.left').classList.add('open-left');
@@ -163,13 +213,18 @@
                 await new Promise(r => setTimeout(r, 2500));
             }
 
-            // 🛑 STOP BELLS & START SONG 🎵
+            // --- 🛑 DARSHAN MOMENT (STOP NOISE, START SONG) ---
+            
+            // Fade out Mantra & Bells smoothly (optional logic simplified here)
+            mantra.pause();
             bells.pause();
-            bells.currentTime = 0; // Reset bells
-            try { song.play(); } catch(e) { console.log("Song Blocked"); }
+            
+            // 🎵 START FINAL SONG
+            try { song.play(); } catch(e){}
 
             status.innerText = "Govinda! Govinda! Govinda!";
             status.style.color = "#ffd700"; status.style.textShadow = "0 0 10px gold"; status.style.fontWeight = "bold";
+            
             document.getElementById('flowerBtn').disabled = false;
             document.getElementById('haratiBtn').disabled = false;
         }
