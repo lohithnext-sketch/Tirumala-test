@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sri Vari Saptha Dwaram</title>
+    <style>
+        :root { --bg-color: #050202; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: #ffd700;
+            font-family: 'Times New Roman', serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .main-container { text-align: center; width: 100%; }
+        .header-text { margin: 5px 0; color: #daa520; text-shadow: 0 4px 15px black; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; }
+        #status-text { color: #888; margin-bottom: 10px; font-size: 0.9rem; font-style: italic; }
+
+        /* 3D FRAME */
+        #temple-frame {
+            position: relative;
+            width: 350px; 
+            height: 540px; 
+            margin: 0 auto;
+            border: 18px solid #1a1008;
+            border-image: url('https://www.transparenttextures.com/patterns/black-scales.png') 20 stretch;
+            background: #000;
+            overflow: hidden; 
+            perspective: 1100px; 
+            box-shadow: 0 0 100px rgba(0,0,0,1);
+        }
+
+        #corridor-rig { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+
+        /* --- IDOL STYLING --- */
+        #idol-sanctum {
+            position: absolute; width: 100%; height: 100%;
+            transform: translateZ(-1600px) scale(3.2); /* Huge Scale */
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1; background: #000;
+        }
+
+        #idol {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: top center;
+            filter: contrast(1.15) saturate(1.2) drop-shadow(0 0 40px rgba(255, 200, 0, 0.6));
+        }
+
+        /* GATE LAYOUT */
+        .gate-layer { position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; display: flex; pointer-events: none; top: 0; left: 0; }
+        .door {
+            width: 50%; height: 100%;
+            transition: transform 3.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; backface-visibility: hidden;
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.95);
+        }
+        .door.left { transform-origin: left; border-right: 2px solid rgba(0,0,0,0.8); }
+        .door.right { transform-origin: right; border-left: 2px solid rgba(0,0,0,0.8); }
+        .open-left { transform: rotateY(105deg); }
+        .open-right { transform: rotateY(-105deg); }
+
+        /* ANCIENT HANDLES */
+        .door::before {
+            content: ''; position: absolute; top: 45%; width: 42px; height: 42px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #8b4513, #3e1b05, #000);
+            border: 2px solid #1a0500; box-shadow: 2px 5px 10px rgba(0,0,0,0.9); z-index: 5;
+        }
+        .door::after {
+            content: ''; position: absolute; top: 48%; width: 48px; height: 48px; border-radius: 50%;
+            border: 7px solid #4a2510; background: transparent;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 2px 4px 5px rgba(0,0,0,0.8);
+            z-index: 6; filter: brightness(0.8);
+        }
+        .door.left::before { right: 25px; } .door.right::before { left: 25px; }
+        .door.left::after { right: 22px; } .door.right::after { left: 22px; }
+
+        /* TEXTURES */
+        .gate-1 .door { background-color: #1a0f05; background-image: radial-gradient(circle, #5c3a1e 3px, transparent 4px), url('https://www.transparenttextures.com/patterns/wood-pattern.png'); background-size: 50px 50px, auto; background-blend-mode: overlay; border: 10px solid #0d0500; }
+        .gate-2 .door { background-color: #555; background-image: radial-gradient(circle at center, transparent 40%, #222 90%), repeating-radial-gradient(circle, #888, #888 2px, #444 4px, #444 10px); background-blend-mode: hard-light; border: 6px ridge #777; filter: contrast(1.3) grayscale(0.6); }
+        .gate-3 .door { background: linear-gradient(to bottom, #4b2e18, #2a1505); background-image: url('https://www.transparenttextures.com/patterns/cracked-concrete.png'); background-blend-mode: multiply; border: 5px solid #3e1b05; box-shadow: inset 0 0 60px #1a0a00; }
+        .gate-4 .door { background-color: #222; background-image: radial-gradient(#555 15%, transparent 16%), radial-gradient(#000 15%, transparent 16%); background-size: 30px 30px; border: 6px double #333; filter: sepia(0.4); }
+        .gate-5 .door { background-color: #b8860b; background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 0px, rgba(0,0,0,0.3) 2px, transparent 2px, transparent 20px); background-blend-mode: multiply; border: 4px solid #8b4513; filter: brightness(0.7) contrast(1.2); }
+        .gate-6 .door { background-color: #daa520; background-image: linear-gradient(45deg, #b8860b 25%, transparent 25%, transparent 75%, #b8860b 75%, #b8860b), linear-gradient(45deg, #b8860b 25%, transparent 25%, transparent 75%, #b8860b 75%, #b8860b); background-size: 20px 20px; box-shadow: inset 0 0 80px #3d2310; border: 6px ridge #b8860b; }
+        .gate-7 .door { background: radial-gradient(circle, #ffd700, #b8860b); background-image: conic-gradient(from 0deg, transparent 0deg 90deg, rgba(139,69,19,0.3) 90deg 180deg, transparent 180deg); background-size: 40px 40px; border: 10px double #ffcc00; box-shadow: inset 0 0 100px #5c3010; filter: contrast(1.2) sepia(0.4); }
+
+        /* CONTROLS */
+        .controls { margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 340px; margin-left: auto; margin-right: auto; }
+        button { background: linear-gradient(#5c3010, #2a1505); color: #daa520; border: 2px solid #8b4513; padding: 12px; font-weight: bold; border-radius: 6px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        button:disabled { background: #111; color: #444; border-color: #222; }
+        .flower { position: absolute; z-index: 100; pointer-events: none; animation: fall 4s linear forwards; font-size: 24px; opacity: 0.8; }
+        @keyframes fall { to { transform: translateY(500px) rotate(360deg); opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1 class="header-text">Sri Vari Saptha Dwaram</h1>
+        <p id="status-text">Govinda! Govinda! Govinda!</p>
+
+        <audio id="bellsAudio" loop>
+            <source src="bells.mp3" type="audio/mpeg">
+        </audio>
+
+        <audio id="songAudio">
+            <source src="song.mp3" type="audio/mpeg">
+        </audio>
+
+        <div id="temple-frame">
+            <div id="corridor-rig">
+                <div id="gates-wrapper"></div>
+                <div id="idol-sanctum">
+                    <img id="idol" 
+                         src="idol.png" 
+                         onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/8/82/Sri_Venkateswara_Swamy_Vari_Temple_Tirumala.jpg';"
+                         alt="Lord Venkateswara">
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn" onclick="startJourney()">🕉️ OPEN GATES</button>
+            <button id="flowerBtn" onclick="showerFlowers()" disabled>🌸 Pushpa Vrishti</button>
+            <button id="haratiBtn" onclick="giveHarati()" disabled>🕯️ Harati</button>
+        </div>
+    </div>
+
+    <script>
+        const wrapper = document.getElementById('gates-wrapper');
+        const totalGates = 7;
+        const gateSpacing = 200; 
+
+        for (let i = 1; i <= totalGates; i++) {
+            const layer = document.createElement('div');
+            layer.className = `gate-layer gate-${i}`;
+            layer.style.zIndex = 100 - i;
+            layer.style.transform = `translateZ(${- (i-1) * gateSpacing}px)`; 
+            layer.innerHTML = `<div class="door left"></div><div class="door right"></div>`;
+            wrapper.appendChild(layer);
+        }
+
+        const gateNames = ["Maha Dwaram", "Vendi Vakili", "Dwajasthambha", "Nadava", "Kulasekhara Padi", "Jaya-Vijaya", "Bangaru Vakili"];
+
+        async function startJourney() {
+            // 🔔 START BELLS
+            const bells = document.getElementById('bellsAudio');
+            const song = document.getElementById('songAudio');
+            try { bells.play(); } catch(e) { console.log("Audio Blocked"); }
+
+            document.getElementById('startBtn').disabled = true;
+            const status = document.getElementById('status-text');
+            const layers = document.querySelectorAll('.gate-layer');
+
+            for (let i = 0; i < totalGates; i++) {
+                status.innerText = `Opening: ${gateNames[i]}...`;
+                layers[i].querySelector('.left').classList.add('open-left');
+                layers[i].querySelector('.right').classList.add('open-right');
+                await new Promise(r => setTimeout(r, 2500));
+            }
+
+            // 🛑 STOP BELLS & START SONG 🎵
+            bells.pause();
+            bells.currentTime = 0; // Reset bells
+            try { song.play(); } catch(e) { console.log("Song Blocked"); }
+
+            status.innerText = "Govinda! Govinda! Govinda!";
+            status.style.color = "#ffd700"; status.style.textShadow = "0 0 10px gold"; status.style.fontWeight = "bold";
+            document.getElementById('flowerBtn').disabled = false;
+            document.getElementById('haratiBtn').disabled = false;
+        }
+
+        function showerFlowers() {
+            const frame = document.getElementById('temple-frame');
+            for(let i=0; i<30; i++) {
+                setTimeout(() => {
+                    const f = document.createElement('div');
+                    f.className = 'flower'; f.innerText = ['🌸', '🌼', '🌺', '🌹'][Math.floor(Math.random()*4)];
+                    f.style.left = Math.random() * 90 + '%'; f.style.top = '-20px';
+                    frame.appendChild(f); setTimeout(() => f.remove(), 4000);
+                }, i * 100);
+            }
+        }
+
+        function giveHarati() {
+            const idol = document.getElementById('idol');
+            idol.style.filter = "brightness(2.5) contrast(1.2) drop-shadow(0 0 100px gold)";
+            setTimeout(() => { idol.style.filter = "contrast(1.15) saturate(1.2) drop-shadow(0 0 40px rgba(255, 200, 0, 0.6))"; }, 3000);
+        }
+    </script>
+</body>
+</html>
